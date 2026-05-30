@@ -52,6 +52,7 @@ struct Config: ConvenienceCopyable {
     var focusedWindowBorderOpacity: Int = 100
     var focusedWindowBorderRadius: Int = 10
     var focusedWindowBorderInset: Int = 0
+    var newWindowPreventFlicker: Bool = false
     var accordionPadding: Int = 30
     var moveResizeToggleAtEdge: Bool = false
     var enableNormalizationOppositeOrientationForNestedContainers: Bool = true
