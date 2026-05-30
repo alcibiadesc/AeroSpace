@@ -54,7 +54,7 @@ struct Config: ConvenienceCopyable {
     var focusedWindowBorderInset: Int = 0
     var newWindowPreventFlicker: Bool = false
     var accordionPadding: Int = 30
-    var moveResizeToggleAtEdge: Bool = false
+    var moveResizeToggleAtEdge: Bool = true
     var enableNormalizationOppositeOrientationForNestedContainers: Bool = true
     var persistentWorkspaces: OrderedSet<String> = []
     var execOnWorkspaceChange: [String] = [] // todo deprecate

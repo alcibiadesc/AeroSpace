@@ -26,10 +26,13 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 accordion-padding = 30
 
 # When a 'move <direction>' command is issued but the focused window is already at the extreme edge
-# in that direction (it can't move or swap any further), instead of doing nothing, cycle the window's
-# size along that axis: 1/2 -> 2/3 -> 3/4 -> back to 1/2. Works on all four edges (left/right/up/down).
-# Fallback value (if you omit the key): move-resize-toggle-at-edge = false
-move-resize-toggle-at-edge = false
+# of a split in that direction (it can't move or swap any further), instead of doing nothing, cycle
+# the window's size along that axis: 1/2 -> 2/3 -> 3/4 -> back to 1/2. Works on all four edges. If
+# there is no split to resize in that direction, 'move' behaves exactly as before (it only ADDS the
+# size toggle, it never changes a move that would otherwise do something).
+# Set to false to disable.
+# Fallback value (if you omit the key): move-resize-toggle-at-edge = true
+move-resize-toggle-at-edge = true
 
 # Possible values: tiles|accordion
 default-root-container-layout = 'tiles'

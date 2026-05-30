@@ -26,8 +26,13 @@ struct MoveCommand: Command {
                             return .succ
                     }
                 } else {
-                    if config.moveResizeToggleAtEdge && isAtExtremeEdge(currentWindow, direction) {
-                        return resizeToggleAtEdge(window: currentWindow, direction: direction)
+                    // Only hijack the edge `move` for a size toggle when there is actually a
+                    // same-orientation split to resize. Otherwise fall through to the normal
+                    // moveOut (e.g. move-up in an all-horizontal layout must still move/reorganize).
+                    if config.moveResizeToggleAtEdge, isAtExtremeEdge(currentWindow, direction),
+                       let exit = resizeToggleAtEdge(window: currentWindow, direction: direction)
+                    {
+                        return exit
                     }
                     return moveOut(window: currentWindow, direction: direction, io, args, env)
                 }
@@ -178,7 +183,11 @@ private let resizeToggleRatios: [CGFloat] = [1.0 / 2.0, 2.0 / 3.0, 3.0 / 4.0]
 /// Cycle the window's size along `direction`'s axis through `resizeToggleRatios` by adjusting the
 /// adaptiveWeight of the window's slice within the relevant tiling container. Other siblings keep
 /// their weights, so the window simply claims a larger/smaller fraction of the shared axis.
-@MainActor private func resizeToggleAtEdge(window: Window, direction: CardinalDirection) -> BinaryExitCode {
+///
+/// Returns nil when there is no meaningful same-orientation split to resize, so the caller can fall
+/// back to the normal `moveOut` behavior. This guarantees the feature only ADDS a size toggle at
+/// real edges and never swallows a move that would otherwise do something.
+@MainActor private func resizeToggleAtEdge(window: Window, direction: CardinalDirection) -> BinaryExitCode? {
     let orientation = direction.orientation
     // The node to resize is the window's ancestor (or itself) whose parent is a tiles container
     // oriented along the move axis — the same selection ResizeCommand uses for an explicit axis.
@@ -186,13 +195,13 @@ private let resizeToggleRatios: [CGFloat] = [1.0 / 2.0, 2.0 / 3.0, 3.0 / 4.0]
         guard let parent = node.parent as? TilingContainer else { return false }
         return parent.layout == .tiles && parent.orientation == orientation
     }
-    guard let node, let parent = node.parent as? TilingContainer else { return .succ }
-    guard parent.children.count > 1 else { return .succ } // nothing to share the axis with
+    guard let node, let parent = node.parent as? TilingContainer else { return nil }
+    guard parent.children.count > 1 else { return nil } // nothing to share the axis with
 
     let totalWeight = CGFloat(parent.children.sumOfDouble { $0.getWeight(orientation) })
     let nodeWeight = node.getWeight(orientation)
     let otherWeight = totalWeight - nodeWeight
-    guard otherWeight > 0 else { return .succ }
+    guard otherWeight > 0 else { return nil }
 
     let currentRatio = nodeWeight / totalWeight
     // Pick the next ratio strictly larger than the current one, wrapping back to the first.
