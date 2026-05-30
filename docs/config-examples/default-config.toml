@@ -25,13 +25,13 @@ enable-normalization-opposite-orientation-for-nested-containers = true
 # You can set 0 to disable the padding feature
 accordion-padding = 30
 
-# When a 'move <direction>' command is issued but the focused window is already at the extreme edge
-# of a split in that direction (it can't move or swap any further), instead of doing nothing, cycle
-# the window's size along that axis. Works on all four edges. If there is no split to resize in that
-# direction, 'move' behaves exactly as before (it only ADDS the size toggle, it never changes a move
-# that would otherwise do something). Set to false to disable.
-# Fallback value (if you omit the key): move-resize-toggle-at-edge = true
-move-resize-toggle-at-edge = true
+# Opt-in: when a 'move <direction>' command would hit the edge of a same-orientation split, cycle the
+# focused window's size along that axis instead, through `move-resize-toggle-ratios`. Works on all
+# four edges. This intentionally repurposes the default `move` behavior at an edge, so it is OFF by
+# default; enable it explicitly. (When there is no same-orientation split to resize, `move` always
+# behaves normally regardless of this setting.)
+# Fallback value (if you omit the key): move-resize-toggle-at-edge = false
+move-resize-toggle-at-edge = false
 # The sizes (as percentages of the parent the focused window occupies) the toggle cycles through.
 # Each 'move' against the edge steps to the next larger percentage, wrapping back to the first.
 # Values must be 1-99; they're sorted automatically. Default 50/60/70 keeps the neighbour usable on
