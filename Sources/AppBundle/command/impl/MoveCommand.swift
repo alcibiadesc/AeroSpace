@@ -159,10 +159,16 @@ private let moveOutMacosUnconventionalWindow = "moving macOS fullscreen, minimiz
     return .succ
 }
 
-/// Ratios that the window cycles through (fraction of its parent container along the move axis).
-/// 1/2 -> 2/3 -> 3/4 -> back to 1/2. Half is the natural resting point (it's what a fresh split
-/// produces), and 2/3, 3/4 are the next "clean" fractions that still leave the neighbours usable.
-private let resizeToggleRatios: [CGFloat] = [1.0 / 2.0, 2.0 / 3.0, 3.0 / 4.0]
+/// Fractions of the parent the window cycles through, derived from the configurable
+/// `move-resize-toggle-ratios` (percentages). Defaults to 50/60/70 (1/2 -> 3/5 -> 7/10), which keep
+/// the neighbour usable on smaller/native screens. Always sorted ascending and clamped to (0, 1).
+@MainActor private var resizeToggleRatios: [CGFloat] {
+    let ratios = config.moveResizeToggleRatios
+        .map { CGFloat($0) / 100 }
+        .filter { $0 > 0 && $0 < 1 }
+        .sorted()
+    return ratios.isEmpty ? [0.5] : ratios
+}
 
 /// True when `window` cannot be moved/swapped any further in `direction`: there is no ancestor
 /// tiling container (oriented along `direction`) holding a sibling beyond the window in that
@@ -206,8 +212,9 @@ private let resizeToggleRatios: [CGFloat] = [1.0 / 2.0, 2.0 / 3.0, 3.0 / 4.0]
     let currentRatio = nodeWeight / totalWeight
     // Pick the next ratio strictly larger than the current one, wrapping back to the first.
     // A small epsilon avoids getting stuck when the current ratio equals a cycle value.
+    let ratios = resizeToggleRatios
     let epsilon: CGFloat = 0.01
-    let nextRatio = resizeToggleRatios.first { $0 > currentRatio + epsilon } ?? resizeToggleRatios[0]
+    let nextRatio = ratios.first { $0 > currentRatio + epsilon } ?? ratios[0]
 
     // weight that makes node occupy `nextRatio` of the parent, with the other siblings unchanged:
     // nextRatio = newWeight / (newWeight + otherWeight)  =>  newWeight = nextRatio/(1-nextRatio) * otherWeight

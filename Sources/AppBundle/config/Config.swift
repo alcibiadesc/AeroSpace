@@ -55,6 +55,7 @@ struct Config: ConvenienceCopyable {
     var newWindowPreventFlicker: Bool = false
     var accordionPadding: Int = 30
     var moveResizeToggleAtEdge: Bool = true
+    var moveResizeToggleRatios: [Int] = [50, 60, 70] // percentages of the parent the window cycles through
     var enableNormalizationOppositeOrientationForNestedContainers: Bool = true
     var persistentWorkspaces: OrderedSet<String> = []
     var execOnWorkspaceChange: [String] = [] // todo deprecate
