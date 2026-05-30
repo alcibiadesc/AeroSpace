@@ -46,6 +46,11 @@ struct Config: ConvenienceCopyable {
     var automaticallyUnhideMacosHiddenApps: Bool = false
     var workspaceHud: Bool = true
     var workspaceHudDurationMs: Int = 850
+    var focusedWindowBorder: Bool = false
+    var focusedWindowBorderColor: String = "0xff12B981"
+    var focusedWindowBorderWidth: Int = 4
+    var focusedWindowBorderOpacity: Int = 100
+    var focusedWindowBorderRadius: Int = 10
     var accordionPadding: Int = 30
     var enableNormalizationOppositeOrientationForNestedContainers: Bool = true
     var persistentWorkspaces: OrderedSet<String> = []
