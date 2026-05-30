@@ -54,7 +54,7 @@ struct Config: ConvenienceCopyable {
     var focusedWindowBorderInset: Int = 0
     var newWindowPreventFlicker: Bool = false
     var accordionPadding: Int = 30
-    var moveResizeToggleAtEdge: Bool = true
+    var moveResizeToggleAtEdge: Bool = false
     var moveResizeToggleRatios: [Int] = [50, 60, 70] // percentages of the parent the window cycles through
     var enableNormalizationOppositeOrientationForNestedContainers: Bool = true
     var persistentWorkspaces: OrderedSet<String> = []
